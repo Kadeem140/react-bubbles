@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+import {authAxios} from '../utils/authAxios'
+
 const initialColor = {
   color: "",
   code: { hex: "" }
 };
 
-const ColorList = ({ colors, updateColors }) => {
+const ColorList = ({ colors, updateColors }, props) => {
   console.log(colors);
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
@@ -16,15 +18,27 @@ const ColorList = ({ colors, updateColors }) => {
     setColorToEdit(color);
   };
 
-  const saveEdit = e => {
-    e.preventDefault();
-    // Make a put request to save your updated color
-    // think about where will you get the id from...
-    // where is is saved right now?
-  };
+  
+ const saveEdit = e => {
+  e.preventDefault();
+  authAxios.put(`/api/colors/${colorToEdit.id}`, colorToEdit)
+       .then(response => {
+         console.log(response)
+         setEditing(false)
+       })
+       .catch(error => console.log(error))
+  // Make a put request to save your updated color
+  // think about where will you get the id from...
+  // where is is saved right now?
+};
 
   const deleteColor = color => {
     // make a delete request to delete this color
+    authAxios().delete(`/api/colors/${colorToEdit.id}`, color)
+    .then(res => {
+      props.history.push('/bubbbles')
+    })
+    .catch(err => console.log(err))
   };
 
   return (
